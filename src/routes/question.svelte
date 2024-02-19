@@ -1,9 +1,10 @@
 <script>
+    import { onMount } from "svelte";
     export let question;
     export let correctAnswer;
     export let incorrectAnswers;
     const shuffle=(array)=>{return array.sort(()=>Math.random()-0.5)};
-    let possibleAnswers=shuffle([...incorrectAnswers,correctAnswer]);
+    $: possibleAnswers=shuffle([...incorrectAnswers,correctAnswer]);
     
     const handleCLick=(ans)=>{
         if(ans==correctAnswer){
@@ -13,6 +14,15 @@
             alert(`Netacan odgovor! Tacan je ${correctAnswer}`); 
         }
     }
+    const getQuestion = async()=>{
+        const res =await fetch('https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple');
+        let data = await res.json();
+        question=data.results[0].question;
+        correctAnswer=data.results[0].correct_answer;
+        incorrectAnswers=data.results[0].incorrect_answers;
+        console.log(data)
+    }
+    onMount(getQuestion)
 </script>
 
 <div>
